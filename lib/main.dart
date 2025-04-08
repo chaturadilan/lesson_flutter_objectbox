@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lesson_flutter_objectbox/entities/note.dart';
+import 'package:objectbox/objectbox.dart';
 
 import 'objectbox.dart';
 
@@ -7,7 +8,9 @@ late ObjectBox objectbox;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   objectbox = await ObjectBox.create();
+
   runApp(MyApp());
 }
 
@@ -33,6 +36,7 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   List<Note> notes = [];
+  Admin? admin;
 
   @override
   void initState() {
@@ -75,6 +79,10 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (Admin.isAvailable()) {
+      // Keep a reference until no longer needed or manually closed.
+      admin = Admin(objectbox.store);
+    }
     return Scaffold(
       appBar: AppBar(title: Text('Notes')),
       body: ListView.builder(
@@ -134,8 +142,14 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     }
   }
 
+  Admin? admin;
+
   @override
   Widget build(BuildContext context) {
+    if (Admin.isAvailable()) {
+      // Keep a reference until no longer needed or manually closed.
+      admin = Admin(objectbox.store);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.note == null ? 'New Note' : 'Edit Note'),
